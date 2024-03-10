@@ -93,7 +93,7 @@ class Display:
         # loading the CUBOTino logo
         folder = pathlib.Path().resolve()                             # active folder (should be home/pi/cube)
         fname = "Cubotino_T_Logo_265x212_BW.jpg"                      # file name with logo image
-        fname = os.path.join(self.folder,fname)                            # folder and file name for the logo image
+        fname = os.path.join(folder,fname)                            # folder and file name for the logo image
         if os.path.exists(fname):                                     # case the logo file exists
             logo = Image.open(fname)                                  # opens the CUBOTino logo image (jpg file)
             self.logo = logo.resize((self.disp_w, self.disp_h))       # resizes the image to match the display.
