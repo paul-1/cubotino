@@ -23,7 +23,8 @@ import os.path, pathlib                            # libraries for path manageme
 LCDdata = { 'st7735': {'Colors': 'BGR', 'Inverted': False, 'BaseRotation': 270, 'SPI': 10000000, 'FontScale': 1.0, },
             'st7789': {'Colors': 'RGB', 'Inverted': True,  'BaseRotation': 180, 'SPI': 50000000, 'FontScale': 2.0, }
           }
-
+default_x = 160                                                           # Default X Resolution for scaling
+default_y = 128                                                           # Default Y Resolution for scaling
 
 class Display:
     display_initialized = False
@@ -67,8 +68,13 @@ class Display:
         self.disp_spi_freq = LCDdata[self.disp_type]['SPI']           # Set SPI Speed
         self.disp_colors = LCDdata[self.disp_type]['Colors']          # Set BGR or RGB colors
         self.fontscale = LCDdata[self.disp_type]['FontScale']         # Set BGR or RGB colors
-        self.Xscale = (self.disp_width / 160 )                        # Scale factor is based on 160x128 screen
-        self.Yscale = (self.disp_height / 128 )
+
+        if self.disp_rotation == 90 or self.disp_rotation == 270:      # Screen width/height is rotated
+            self.Xscale = (self.disp_height / default_x )             # Scale factor is based on 160x128 screen
+            self.Yscale = (self.disp_width / default_y )
+        else:
+            self.Xscale = (self.disp_width / default_x )              # Scale factor is based on 160x128 screen
+            self.Yscale = (self.disp_height / default_y )
 
         if self.display_settings:
             self.disp = LCD(port=0, cs=0,                             # SPI and Chip Selection                  
@@ -180,15 +186,15 @@ class Display:
     def display_progress_bar(self, percent, scrambling=False):
         """ Function to print a progress bar on the display."""
         
-        w = 160                                            # display width, retrieved by display setting
+        w = default_x                                              # display width, retrieved by display setting
         
         # percent value printed as text 
-        fs = 40                 # font size
+        fs = 40                 # font size (Scaled in next line)
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", self.fontsize(fs))     # font and its size
         text_x = int(w/2 - (fs*len(str(percent))+1)/2)             # x coordinate for the text starting location         
         text_y = 15                                                # y coordinate for the text starting location
         disp_img = Image.new('RGB', (self.disp_w, self.disp_h), color=self.bgr((0, 0, 0))) # full black image
-        disp_draw = ImageDraw.Draw(disp_img)                        # image is drawned
+        disp_draw = ImageDraw.Draw(disp_img)                       # image is drawned
         disp_draw.text(self.scale_xy((text_x, text_y)), str(percent)+'%', font=font, fill=self.bgr((255, 255, 255)))    # text with percent value
         
         # percent value printed as progress bar filling 
@@ -236,8 +242,8 @@ class Display:
     def show_face(self, side, colours=[]):
         """ Function to print a sketch of the cube face colours."""
         
-        w = 160                                            # display width, default size
-        h = 128                                            # display height, default size
+        w = default_x                                      # display width, default size
+        h = default_y                                      # display height, default size
         faces = ('', 'U', 'B', 'D', 'F', 'R', 'L')         # tuple of faces letters
         y_start = 20                                       # y coordinate for face top-left corner
         d = int(h-y_start)/3.8                             # facelet square side
@@ -330,8 +336,8 @@ class Display:
         
         import time
         
-        w = 160                                            # display width, scaled below
-        h = 128                                            # display height, scaled below
+        w = default_x                                                     # display width, scaled below
+        h = default_y                                                     # display height, scaled below
         
         font1 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", self.fontsize(20))  # font1
         font2 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", self.fontsize(16))  # font2
