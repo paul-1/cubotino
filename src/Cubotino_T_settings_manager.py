@@ -482,11 +482,11 @@ class Settings:
             s['fcs_delay']='3'
             any_change = True
         
-        if 'disp_type' not in settings_keys:
+        if 'disp_type' not in s_keys:
             s['disp_type'] = 'st7735'
             any_change = True
         
-        if 'disp_flip' not in settings_keys:
+        if 'disp_flip' not in s_keys:
             s['disp_flip'] = 'false'
             any_change = True
          
