@@ -20,6 +20,11 @@ import os.path, pathlib                            # libraries for path manageme
 
 
 # Dictionary of LCD data, ST7735 display parameters are default for all other conversions.
+#    Colors: <BGR|RGB> What color scheme does the display use
+#    Inverted: <True|False> Are white and black inverted
+#    BaseRotation: <180|270> Sets the default rotation
+#    SPI: <Value 3900000-125000000> Spi bus speed.
+#    FontScale: Scale factor to apply to all fonts.
 LCDdata = { 'st7735': {'Colors': 'BGR', 'Inverted': False, 'BaseRotation': 270, 'SPI': 10000000, 'FontScale': 1.0, },
             'st7789': {'Colors': 'RGB', 'Inverted': True,  'BaseRotation': 180, 'SPI': 50000000, 'FontScale': 2.0, }
           }
@@ -40,7 +45,7 @@ class Display:
             self.disp_height = int(s['disp_height'])                  # display height, in pixels
             self.disp_offsetL = int(s['disp_offsetL'])                # Display offset on width, in pixels, Left if negative
             self.disp_offsetT = int(s['disp_offsetT'])                # Display offset on height, in pixels, Top if negative
-            self.disp_flip = s['disp_flip']			                  # Display flipped 180degrees
+            self.disp_flip = s['disp_flip']                           # Display flipped 180degrees
             self.built_by = str(s['built_by'])                        # maker's name to add on the Cubotino logo
             self.built_by_x = int(s['built_by_x'])                    # x coordinate for maker's name on display
             self.built_by_fs = int(s['built_by_fs'])                  # font size for the maker's name on display
@@ -49,10 +54,10 @@ class Display:
         if not self.display_settings:                                 # case display_settings is still False
             print("Error on loading the display parameters at Cubotino_T_display")
             
-        if self.disp_type == 'st7735':
+        if self.disp_type == 'st7735':                                # Using a ST7735 based display.
             print('Importing ST7735 Display')
             from ST7735 import ST7735 as LCD                          # library for the TFT display with ST7735 driver
-        elif self.disp_type == 'st7789':
+        elif self.disp_type == 'st7789':                              # Using a ST7789 based display. 
             print('Importing ST7789 Display')
             from ST7789 import ST7789 as LCD                          # library for the TFT display with ST7789 driver
         else:
@@ -60,7 +65,7 @@ class Display:
 
         # Set screen data from table above
         if self.disp_flip:                                            # Flip the screen upside down if true.
-            self.disp_rotation = LCDdata[self.disp_type]['BaseRotation'] - 180
+            self.disp_rotation = LCDdata[self.disp_type]['BaseRotation'] - 180  # LCD Data uses >= 180 for base.
         else:
             self.disp_rotation = LCDdata[self.disp_type]['BaseRotation']
             
@@ -77,10 +82,10 @@ class Display:
             self.Yscale = (self.disp_height / default_y )
 
         if self.display_settings:
-            self.disp = LCD(port=0, cs=0,                             # SPI and Chip Selection                  
+            self.disp = LCD(port=0, cs=0,                             # SPI and Chip Selection
                             dc=27, rst=22, backlight=4,               # GPIO pins used for the SPI, reset and backlight control
                             width=self.disp_width,     #(AF 132)      # see note above for width and height !!!
-                            height=self.disp_height,   #(AF 162)      # see note above for width and height !!!                         
+                            height=self.disp_height,   #(AF 162)      # see note above for width and height !!!
                             offset_left=self.disp_offsetL,            # see note above for offset  !!!
                             offset_top=self.disp_offsetT,             # see note above for offset  !!!
                             rotation=self.disp_rotation,              # image orientation
@@ -158,7 +163,7 @@ class Display:
     def clean_display(self):
         """ Cleans the display by settings all pixels to black."""
         disp_img = Image.new('RGB', (self.disp_w, self.disp_h), color=self.bgr((0, 0, 0)))  # full black screen as new image
-        self.disp.display(disp_img)                                                       # display is shown to display
+        self.disp.display(disp_img)                                                         # display is shown to display
 
 
 
